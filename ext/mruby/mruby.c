@@ -25,11 +25,8 @@ VALUE mruby_eval(VALUE mruby, VALUE source) {
     mrb_value v, inspect_v;
     mrbc_context *c;
 
-    char *src;
-
+    VALUE source_bytesize;
     VALUE result;
-
-    src = StringValuePtr(source);
 
     Data_Get_Struct(mruby, mrb_state, mrb);
 
@@ -39,7 +36,10 @@ VALUE mruby_eval(VALUE mruby, VALUE source) {
     mrbc_filename(mrb, c, "<ruby>");
     mrb_gv_set(mrb, zero_sym, mrb_str_new_lit(mrb, "<ruby>"));
 
-    v = mrb_load_string_cxt(mrb, src, c);
+    source_bytesize = LONG2NUM(RSTRING_LEN(source));
+
+    v = mrb_load_nstring_cxt(mrb,
+	    StringValuePtr(source), NUM2INT(source_bytesize), c);
 
     mrbc_context_free(mrb, c);
 
