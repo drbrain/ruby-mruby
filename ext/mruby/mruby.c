@@ -7,6 +7,8 @@
 
 #include "extconf.h"
 
+static VALUE sym_verbose;
+
 VALUE
 mruby_alloc(VALUE klass) {
     VALUE obj;
@@ -19,18 +21,28 @@ mruby_alloc(VALUE klass) {
     return obj;
 }
 
-VALUE mruby_eval(VALUE mruby, VALUE source) {
+static void
+mruby_context_options(VALUE options, mrbc_context *c) {
+    if (RTEST(rb_hash_fetch(options, sym_verbose)))
+	c->dump_result = TRUE;
+}
+
+VALUE
+mruby_eval(int argc, VALUE *argv, VALUE mruby) {
     mrb_state *mrb;
     mrb_sym zero_sym;
     mrb_value v, inspect_v;
     mrbc_context *c;
 
-    VALUE source_bytesize;
-    VALUE result;
+    VALUE source, source_bytesize, options, result;
+
+    rb_scan_args(argc, argv, "1:", &source, &options);
 
     Data_Get_Struct(mruby, mrb_state, mrb);
 
     c = mrbc_context_new(mrb);
+
+    mruby_context_options(options, c);
 
     zero_sym = mrb_intern_lit(mrb, "$0");
     mrbc_filename(mrb, c, "<ruby>");
@@ -56,6 +68,8 @@ Init_mruby(void) {
 
     rb_define_alloc_func(cMRuby, mruby_alloc);
 
-    rb_define_method(cMRuby, "eval", mruby_eval, 1);
+    rb_define_method(cMRuby, "eval", mruby_eval, -1);
+
+    sym_verbose = ID2SYM(rb_intern("verbose"));
 }
 
