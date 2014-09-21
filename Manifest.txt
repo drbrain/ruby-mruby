@@ -1,0 +1,8 @@
+.autotest
+History.rdoc
+Manifest.txt
+README.rdoc
+Rakefile
+ext/mruby/extconf.rb
+ext/mruby/mruby.c
+lib/mruby.rb
