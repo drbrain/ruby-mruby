@@ -21,7 +21,8 @@ Embeds MRuby inside Ruby
 
 == Requirements
 
-* Local MRuby build
+* Local MRuby build with the
+  {ruby_compat}[https://github.com/drbrain/mruby/tree/ruby_compat] patch
 
 == Install
 
